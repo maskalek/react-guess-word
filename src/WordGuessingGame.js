@@ -1,6 +1,6 @@
 // src/WordGuessingGame.js
 import React, { useState, useEffect } from 'react';
-import { Alert, AlertIcon, AlertDescription, Box, Input, Button, Stack, Text, Heading } from '@chakra-ui/react';
+import { Alert, AlertIcon, AlertDescription, Box, Input, Button, Stack, Text, Heading, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, useDisclosure } from '@chakra-ui/react';
 import wordsData from './words.json';
 
 const WordGuessingGame = () => {
@@ -11,7 +11,7 @@ const WordGuessingGame = () => {
     return savedAttempts ? JSON.parse(savedAttempts) : [];
   });
   const [loading, setLoading] = useState(false);
-  const [win, setWin] = useState(false);
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const targetWord = 'шампуры';
 
   useEffect(() => {
@@ -27,7 +27,7 @@ const WordGuessingGame = () => {
       const similarity = wordsData[guess] !== undefined ? wordsData[guess] : 10001;
 
       if (similarity === 1) {
-        setWin(true);
+        onOpen();
       }
 
       setAttempts([...attempts, { word: guess, similarity }]);
@@ -47,7 +47,7 @@ const WordGuessingGame = () => {
 
   const clearAttempts = () => {
     setAttempts([]);
-    setWin(false);
+    localStorage.removeItem('attempts');
   };
 
   const getSimilarityColor = (similarity) => {
@@ -88,12 +88,6 @@ const WordGuessingGame = () => {
       >
         Очистить попытки
       </Button>
-      {win && (
-        <Alert status="success" mt="4">
-          <AlertIcon />
-          <AlertDescription>WIN!</AlertDescription>
-        </Alert>
-      )}
       {attempts.length > 0 && (
         <Box mt="6">
           <Heading as="h2" size="lg" mb="2">Попытки:</Heading>
@@ -123,6 +117,22 @@ const WordGuessingGame = () => {
           </Stack>
         </Box>
       )}
+
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Поздравляем!</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            Ты победил, напиши в телеграм это слово чтобы получить подарок!
+          </ModalBody>
+          <ModalFooter>
+            <Button colorScheme="blue" onClick={onClose}>
+              Закрыть
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </Box>
   );
 };
