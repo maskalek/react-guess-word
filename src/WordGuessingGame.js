@@ -1,7 +1,7 @@
 // src/WordGuessingGame.js
 import React, { useState, useEffect } from 'react';
 import { Alert, AlertIcon, AlertDescription, Box, Input, Button, Stack, Text, Heading, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, useDisclosure } from '@chakra-ui/react';
-import wordsData from './words.json';
+import { wordsData } from './words';
 
 const WordGuessingGame = () => {
   const [guess, setGuess] = useState('');
@@ -20,21 +20,23 @@ const WordGuessingGame = () => {
   }, [attempts]);
 
   const handleGuess = () => {
-    if (guess.trim() === '') return;
-    if (attempts.some(attempt => attempt.word === guess)){
+    const localGuess = guess.trim().toLowerCase();
+
+    if (localGuess === '') return;
+    if (attempts.some(attempt => attempt.word === localGuess)){
       setGuess('');
       return;
     } // Check for duplicate words
     setLoading(true);
 
     try {
-      const similarity = wordsData[guess] !== undefined ? wordsData[guess] : 10001;
+      const similarity = wordsData[localGuess] !== undefined ? wordsData[localGuess] : 100001;
 
       if (similarity === 1) {
         onOpen();
       }
 
-      setAttempts([...attempts, { word: guess, similarity }]);
+      setAttempts([...attempts, { word: localGuess, similarity }]);
       setGuess('');
     } catch (error) {
       console.error('Error processing guess:', error);
@@ -112,7 +114,7 @@ const WordGuessingGame = () => {
                       color="black" // Changed to black for better contrast
                       fontSize="sm"
                     >
-                      {attempt.similarity > 10000 ? '>10000' : attempt.similarity}
+                      {attempt.similarity > 100000 ? '>100000' : attempt.similarity}
                     </Text>
                   </AlertDescription>
                 </Alert>
@@ -141,3 +143,5 @@ const WordGuessingGame = () => {
 };
 
 export default WordGuessingGame;
+
+
