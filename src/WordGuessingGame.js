@@ -21,6 +21,10 @@ const WordGuessingGame = () => {
 
   const handleGuess = () => {
     if (guess.trim() === '') return;
+    if (attempts.some(attempt => attempt.word === guess)){
+      setGuess('');
+      return;
+    } // Check for duplicate words
     setLoading(true);
 
     try {
@@ -96,7 +100,6 @@ const WordGuessingGame = () => {
               .sort((a, b) => a.similarity - b.similarity)
               .map((attempt, index) => (
                 <Alert key={index} status="info">
-                  <AlertIcon />
                   <AlertDescription>
                     <Text as="span" fontWeight="bold">{attempt.word}</Text>
                     <Text 
